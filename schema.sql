@@ -1,0 +1,33 @@
+CREATE DATABASE IF NOT EXISTS al_huda_accreditation CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE al_huda_accreditation;
+
+CREATE TABLE IF NOT EXISTS admins (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(190) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS platform_state (
+  state_key VARCHAR(80) NOT NULL PRIMARY KEY,
+  state_json LONGTEXT NOT NULL,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS indicator_files (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  criterion_number VARCHAR(30) NOT NULL,
+  element_index INT NOT NULL,
+  point_index INT NOT NULL,
+  original_name VARCHAR(255) NOT NULL,
+  stored_name VARCHAR(255) NOT NULL,
+  mime_type VARCHAR(120) NOT NULL,
+  file_size BIGINT UNSIGNED NOT NULL,
+  file_data LONGBLOB NOT NULL,
+  relative_path VARCHAR(500) NOT NULL,
+  uploaded_by BIGINT UNSIGNED NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_indicator_file (criterion_number, element_index, point_index),
+  CONSTRAINT fk_indicator_file_admin FOREIGN KEY (uploaded_by) REFERENCES admins(id) ON DELETE SET NULL
+);
